@@ -11,7 +11,7 @@ class home extends StatefulWidget {
 }
 
 class _homeState extends State<home> {
-  List<Data> userDashBoardDetailsVar=[];
+  List<Data> Datalists=[];
 
   //checking for numeric value
   bool isNumeric(String s)
@@ -29,7 +29,7 @@ class _homeState extends State<home> {
 
 
 //function to load data from json using model class
-  Future<List<Data>> fetchDashBoardData() async
+  Future<List<Data>> fetchData() async
   {
     final response = await http.get(
       Uri.parse('https://api.github.com/repos/flutter/flutter/commits'),
@@ -42,10 +42,10 @@ class _homeState extends State<home> {
       for(var i in jsonresponse)
         {
          setState(() {
-           userDashBoardDetailsVar.add(Data.fromJson(i));
+           Datalists.add(Data.fromJson(i));
          });
         }
-      return userDashBoardDetailsVar;
+      return Datalists;
     } else {
       throw Exception('Failed to load request');
     }
@@ -67,14 +67,14 @@ class _homeState extends State<home> {
       body: Container(
         height: MediaQuery.of(context).size.height,
         child: FutureBuilder(
-            future: fetchDashBoardData(),
+            future: fetchData(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return  ListView.builder(
                     itemCount: snapshot.data.length,
                     itemBuilder: (BuildContext context,int index){
                       //spliting commit data to get last value of commit to check it ends with number or not
-                      var splitdata=userDashBoardDetailsVar[index].commit.message.split(' ');
+                      var splitdata=Datalists[index].commit.message.split(' ');
 
                       //calling numeric check function
                       isNumeric(splitdata.last);
@@ -87,7 +87,7 @@ class _homeState extends State<home> {
                             color: isNumeric(splitdata.last)? Colors.yellow:Colors.white,
                             child:
                             ListTile(leading: Icon(Icons.arrow_forward_ios,color: Colors.black,),
-                            title: Text(userDashBoardDetailsVar[index].commit.message, style: TextStyle(fontSize: 14),))
+                            title: Text(Datalists[index].commit.message, style: TextStyle(fontSize: 14),))
                             ),
 
                            Divider(color: Colors.black,thickness: 2,)
